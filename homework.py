@@ -202,22 +202,22 @@ width = 800
 height = 480
 window = pygame.display.set_mode((width, height))
 screen_rect = window.get_rect()
-landscape = pygame.image.load("landscape2.jpg").convert()
+landscape = pygame.image.load("images/landscape2.jpg").convert()
 landscape = pygame.transform.scale(landscape, (width,height))
 
 
-missionarie1 = {"file": "baby.png", "id": "missionarie1"}
-missionarie2 = {"file": "baby.png", "id": "missionarie2"}
-missionarie3 = {"file": "baby.png", "id": "missionarie3"}
+missionarie1 = {"file": "images/baby.png", "id": "missionarie1"}
+missionarie2 = {"file": "images/baby.png", "id": "missionarie2"}
+missionarie3 = {"file": "images/baby.png", "id": "missionarie3"}
 
-cannibal1 = {"file": "cannibal.png", "id": "cannibal1"}
-cannibal2 = {"file": "cannibal.png", "id": "cannibal2"}
-cannibal3 = {"file": "cannibal.png", "id": "cannibal3"}
+cannibal1 = {"file": "images/cannibal.png", "id": "cannibal1"}
+cannibal2 = {"file": "images/cannibal.png", "id": "cannibal2"}
+cannibal3 = {"file": "images/cannibal.png", "id": "cannibal3"}
 
 boatLeftSide = (screen_rect.width/7 * 2, screen_rect.centery)
 boatRightSide = (screen_rect.width/7 * 5, screen_rect.centery)
 boat = {"id": "boat"}
-boat["surf"] = pygame.image.load("boat.png")
+boat["surf"] = pygame.image.load("images/boat.png")
 boat["surf"] = pygame.transform.scale(boat["surf"], (screen_rect.width/ 4, screen_rect.height / 4))
 boat["rect"] = boat["surf"].get_rect()
 boat["rect"].center = boatLeftSide
