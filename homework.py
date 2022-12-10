@@ -178,7 +178,6 @@ def printLibreSpaces():
 
 
 
-
 def failure():
     myfont = pygame.font.Font('freesansbold.ttf', 48)
     msg = myfont.render("Failure", True, (255, 0, 0))
@@ -206,13 +205,13 @@ landscape = pygame.image.load("images/landscape2.jpg").convert()
 landscape = pygame.transform.scale(landscape, (width,height))
 
 
-missionarie1 = {"file": "images/baby.png", "id": "missionarie1"}
-missionarie2 = {"file": "images/baby.png", "id": "missionarie2"}
-missionarie3 = {"file": "images/baby.png", "id": "missionarie3"}
+missionarie1 = {"file": "images/baby.png", "id": "missionarie1", "type":"missionarie"}
+missionarie2 = {"file": "images/baby.png", "id": "missionarie2", "type":"missionarie"}
+missionarie3 = {"file": "images/baby.png", "id": "missionarie3", "type":"missionarie"}
 
-cannibal1 = {"file": "images/cannibal.png", "id": "cannibal1"}
-cannibal2 = {"file": "images/cannibal.png", "id": "cannibal2"}
-cannibal3 = {"file": "images/cannibal.png", "id": "cannibal3"}
+cannibal1 = {"file": "images/cannibal.png", "id": "cannibal1", "type":"canibal"}
+cannibal2 = {"file": "images/cannibal.png", "id": "cannibal2", "type":"canibal"}
+cannibal3 = {"file": "images/cannibal.png", "id": "cannibal3", "type":"canibal"}
 
 boatLeftSide = (screen_rect.width/7 * 2, screen_rect.centery)
 boatRightSide = (screen_rect.width/7 * 5, screen_rect.centery)
@@ -278,25 +277,102 @@ for i, actor in enumerate(actors):
 #print(left_places)
 actors.append(boat)
 
+def gameState():
+    gamestate = ""
+    missionaries = 0
+    canibals = 0
+    for place in left_places:
+        if place[1] is not None:
+            if place[1]["type"] == "canibal":
+                canibals +=1
+            if place[1]["type"] == "missionarie":
+                missionaries += 1
+
+    if boatPlace == "left":
+        if boat_passengers[1] is not None:
+            if boat_passengers[1]["type"] == "canibal":
+                canibals += 1
+            if boat_passengers[1]["type"] == "missionarie":
+                missionaries += 1
+        if boat_passengers[2] is not None:
+            if boat_passengers[2]["type"] == "missionarie":
+                missionaries += 1
+            if boat_passengers[2]["type"] == "canibal":
+                canibals += 1
+
+
+    for i in range(missionaries):
+        gamestate += "m"
+    for i in range(canibals):
+        gamestate += "c"
+
+    if boatPlace == "right":
+        gamestate += "-R-"
+    else:
+        gamestate += "-L-"
+
+    missionaries = 0
+    canibals = 0
+
+    for place in right_places:
+        if place[1] is not None:
+            if place[1]["type"] == "canibal":
+                canibals +=1
+            if place[1]["type"] == "missionarie":
+                missionaries += 1
+
+    if boatPlace == "right":
+        if boat_passengers[1] is not None:
+            if boat_passengers[1]["type"] == "canibal":
+                canibals += 1
+            if boat_passengers[1]["type"] == "missionarie":
+                missionaries += 1
+        if boat_passengers[2] is not None:
+            if boat_passengers[2]["type"] == "missionarie":
+                missionaries += 1
+            if boat_passengers[2]["type"] == "canibal":
+                canibals += 1
+
+    for i in range(missionaries):
+        gamestate += "m"
+    for i in range(canibals):
+        gamestate += "c"
+
+    return gamestate
+
+
 
 gamegraph = {
-            "wgcf-": {"f": "wgc-f", "w": "gc-wf", "g": "wc-gf", "c": "wg-cf"},
-            "wc-gf": {"f": "wcf-g", "g": "wgcf-"},
-            "gc-wf": "failure",
-                "gcf-w": {"f": "gc-wf", "g": "c-wgf", "c": "g-wcf"},
-                    "c-wgf": {"f": "cf-wg", "w": "wcf-g", "g": "gcf-w"},
-                        "cf-wg": "failure",
-                    "g-wcf": {"f": "gf-wc", "w": "wgf-c", "c": "gcf-w"},
-                        "gf-wc": {"f": "g-wcf", "g": "-wgcf"},
-            "wg-cf": "failure",
-                "wgf-c": {"f": "wg-cf", "g": "w-gcf", "w": "g-wcf"},
-                    "w-gcf": {"f": "wf-gc", "g": "wgf-c", "c": "wcf-g"},
-                        "wf-gc": "failure",
-            "wcf-g": {"f": "wc-gf" , "c": "w-gcf", "w": "c-wgf"} ,
-            "wgc-f": "failure",
-            "-wgcf": "success"}
+            "mmmccc-L-": {"mm": "mccc-R-mm", "cc": "mmmc-R-cc", "m": "mmccc-R-m", "c": "mmmcc-R-c", "mc": "mmcc-R-mc"},
+                "mccc-R-mm": "fail",
+                "mmmc-R-cc": {"cc": "mmmccc-L-", "c": "mmmcc-L-c"},
+                    "mmmcc-L-c": {"mm": "mcc-R-mmc", "cc": "mmm-R-ccc", "m": "mmcc-R-mc", "c": "mmmc-R-cc", "mc": "mmc-R-mcc"},
+                        "mcc-R-mmc": "fail",
+                        "mmm-R-ccc": {"cc": "mmmcc-L-c", "c": "mmmc-L-cc"},
+                            "mmmc-L-cc": {"mm": "mc-R-mmcc", "m": "mmc-R-mcc", "c": "mmm-R-ccc", "mc": "mm-R-mccc"},
+                                "mc-R-mmcc": {"mm": "mmmc-L-cc", "cc": "mccc-L-mm", "m": "mmc-L-mcc", "c": "mcc-L-mmc", "mc": "mmcc-L-mc"},
+                                    "mmcc-L-mc": {"mm": "cc-R-mmmc", "cc": "mm-R-mccc", "m": "mcc-R-mmc", "c": "mmc-R-mcc", "mc": "mc-R-mmcc"},
+                                        "cc-R-mmmc": {"mm": "mmcc-L-mc", "m": "mcc-L-mmc", "c": "ccc-L-mmm", "mc": "mccc-L-mm"},
+                                            "ccc-L-mmm": {"cc": "c-R-mmmcc", "c": "cc-R-mmmc"},
+                                                "c-R-mmmcc": {"mm": "mmc-L-mcc", "cc": "ccc-L-mmm", "m": "mc-L-mmcc", "c": "cc-L-mmmc", "mc": "mcc-L-mmc"},
+                                                    "mc-L-mmcc": {"m": "c-R-mmmcc", "c": "m-R-mmccc", "mc": "-R-mmmccc"},
+                                                        "m-R-mmccc": {"mm": "mmm-L-ccc", "cc": "mcc-L-mmc", "m": "mm-L-mccc", "c": "mc-L-mmcc", "mc": "mmc-L-mcc"},
+                                                            "m-R-mmccc": "fail",
+                                                        "-R-mmmccc": "success",
+                                                    "cc-L-mmmc": {"cc": "-R-mmmccc", "c": "c-R-mmmcc"},
+                                    "mcc-L-mmc": "fail",
+                                    "mmc-L-mcc": "fail",
+                                    "mccc-L-mm": "fail",
+                                "mm-R-mccc": "fail",
+                        "mmc-R-mcc": "fail",
+                "mmccc-R-m": {"m": "mmmccc-L-"},
+                "mmmcc-R-c": {"c": "mmmccc-L-"},
+                "mmcc-R-mc": {"m": "mmmcc-L-c", "c": "mmccc-L-m", "mc": "mmmccc-L-"},
+                    "mmccc-L-m": {"mm": "ccc-R-mmm", "cc": "mmc-R-mcc", "m": "mccc-R-mm", "c": "mmcc-R-mc", "mc": "mcc-R-mmc"},
+                        "ccc-R-mmm": {"mm": "mmccc-L-m", "m": "mmmc-L-cc"},
+            "-R-mmmccc": "success"}
 
-gamestate = "wgcf-"
+
 controls = {pygame.K_f: "f", pygame.K_g: "g", pygame.K_c: "c", pygame.K_w: "w"}
 #passengers = {"f": [farm], "g": [farm, goat], "c": [farm, cabb], "w": [farm, wolf]}
 ferry_step = -5
@@ -311,6 +387,7 @@ to_dismount = None
 
 fpsClock = pygame.time.Clock()
 #printLibreSpaces()
+
 while True:
     #print(boatPlace)
     window.blit(landscape, screen_rect.topleft)
@@ -341,14 +418,14 @@ while True:
 
             elif event["id"] != boat_place1["id"] and event["id"] != boat_place2["id"]:
                 if boat_place1["id"] == "void":
-                    print(foundPosition(event))
-                    print(boatPlace)
+                    #print(foundPosition(event))
+                    #print(boatPlace)
                     if foundPosition(event) == boatPlace:
                         action = "mount_boat_1"
                         boat_place1 = event
                         boat_passengers[1] = event
                         updateSpacesStatus(event)
-                        print(boat)
+                        #print(boat)
                 elif boat_place2["id"] == "void":
                     if foundPosition(event) == boatPlace:
                         action = "mount_boat_2"
@@ -358,29 +435,35 @@ while True:
                         print(boat)
     if action is not None:
         None
-        #print(action)
+
+    if action == "check_solution":
+        print("\n\n")
+        print(gameState())
+        print(gamegraph[gameState()])
+        action = None
+
     if action == "ferry":
         destination = boatLeftSide  if boatPlace == "right" else boatRightSide
         done = ferry(boat_passengers, step, destination)
         if done:
             boatPlace = "left" if boatPlace == "right" else "right"
-            action = None
+            action = "check_solution"
 
 
     if action == "mount_boat_1":
         done = mountBoat(boat_place1,boat,1)
         if done:
-            action = None
+            action = "check_solution"
 
     if action == "mount_boat_2":
         done = mountBoat(boat_place2,boat,2)
         if done:
-            action = None
+            action = "check_solution"
 
     if action == "dismount_boat":
         done = dismount(to_dismount)
         if done:
-            action = None
+            action = "check_solution"
 
 
     pygame.display.flip()
