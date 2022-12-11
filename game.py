@@ -1,9 +1,27 @@
+"""
+This is the missionarys and cannibals game logic
+"""
+
+
 import sys
 import pygame
+
+
 def game():
     def ferry(passengers, step, position):
         """
-        who Position [0] is the leader
+        This function is in charge of move sprites("passengers")(taking the
+        center by refference) to the final position.
+        The passengers[0] is the leader and the reference.
+        All the other sprites will move in the same direction than the leader.
+        Each time is called 1 step is moved.
+        In case that one step is higher than the distance between passenger[0]
+        center and position, the passenger is directly move to the position.
+        If the passenger leader is in position when steps movement are finished
+        the sprite will look in the oposite direction.
+
+        If the passenger[0] is in the final position at the end
+        return true if not return false.
         """
         position = (int(position[0]), int(position[1]))
         done = False
@@ -23,7 +41,8 @@ def game():
                         actor["rect"].centerx = position[0]
                 else:
                     for actor in who:
-                        actor["rect"] = actor["rect"].move((-dist_to_goal_x, 0))
+                        actor["rect"] = actor["rect"].move(
+                            (-dist_to_goal_x, 0))
             elif (leader["rect"].centerx - position[0]) >= 0:
                 for actor in who:
                     actor["rect"] = actor["rect"].move((-step, 0))
@@ -48,12 +67,18 @@ def game():
 
         if position == leader["rect"].center:
             for actor in who:
-                actor["surf"] = pygame.transform.flip(actor["surf"], True, False)
+                actor["surf"] = pygame.transform.flip(
+                    actor["surf"], True, False)
             done = True
 
         return done
 
     def freePos(who):
+        """
+        It realease the space that is ocuppied by who
+        on the sides (Not in the boat)
+        Spaces are stored in left_places and right_places
+        """
         for space in left_places:
             if space[1] is not None:
                 if space[1]["id"] == who["id"]:
@@ -67,6 +92,10 @@ def game():
                     break
 
     def foundPosition(who):
+        """
+        It returns "right" if "who" is in right_places
+        It returns "left" if "who" is in lenft_places
+        """
         for position in right_places:
             if position[1] is not None:
                 if position[1]["id"] == who["id"]:
@@ -77,6 +106,10 @@ def game():
                     return "left"
 
     def freeBoatPos(who):
+        """
+        It release the space that is occupied by who
+        in the boat
+        """
         nonlocal boat_place1
         nonlocal boat_place2
         if boat_place1["id"] == who["id"]:
@@ -89,23 +122,33 @@ def game():
             boat_passengers[2] = None
 
     def mountBoat(who, boat, position):
+        """
+        It mounts "who" into "boat" "position"
+        """
         boat_long = boat["rect"].right - boat["rect"].left
         if position == 1:
-            # print((boat["rect"].centerx/4 * 1, boat["rect"].centery+ height* 0,1 ))
-            done = ferry([who], step, (boat["rect"].left + (boat_long / 4 * 1), boat["rect"].centery - height * 0.1))
+            done = ferry([who],
+                         step,
+                         (boat["rect"].left + (boat_long / 4 * 1),
+                          boat["rect"].centery - height * 0.1))
             if done:
                 freePos(who)
-                # printLibreSpaces()
             return done
         else:
-            done = ferry([who], step, (boat["rect"].left + (boat_long / 4 * 3), boat["rect"].centery - height * 0.1))
+            done = ferry([who],
+                         step,
+                         (boat["rect"].left + (boat_long / 4 * 3),
+                          boat["rect"].centery - height * 0.1))
             if done:
                 freePos(who)
-                # printLibreSpaces()
             return done
 
     def dismount(who):
-        # printLibreSpaces()
+        """
+        It moves "who" from the "boat" to the corresponding
+        place in the sides of the river.
+        It uses the funcion ferry()
+        """
         if boatPlace == "right":
             for i, space in enumerate(right_places):
 
@@ -145,21 +188,28 @@ def game():
         return False
 
     def printLibreSpaces():
+        """
+        It prints the libre spaces of the boat.
+        This function is only used for debug.
+        """
         print("\n\n")
         for i, place in enumerate(left_places):
             if place[1] is None:
-                print(f"Izquierda: {i}, {place[0]},0")
+                print(f"Left: {i}, {place[0]},0")
             else:
-                print(f"Izquierda: {i}, {place[0]}, Ocupied")
+                print(f"Left: {i}, {place[0]}, Ocupied")
 
         print("\n\n")
         for i, place in enumerate(right_places):
             if place[1] is None:
-                print(f"Derecha: {i}, {place[0]}, 0")
+                print(f"Right: {i}, {place[0]}, 0")
             else:
-                print(f"Derecha: {i}, {place[0]}, Ocupied")
+                print(f"Right: {i}, {place[0]}, Ocupied")
 
     def gameState():
+        """
+        It returns the game for example "-R-mmmccc"
+        """
         gamestate = ""
         missionaries = 0
         canibals = 0
@@ -221,8 +271,12 @@ def game():
 
         return gamestate
 
-
     def updateSpacesStatus(last_movement_object):
+        """
+        It update the last_movement_object in a logical way
+        For example if it was in left_places and now is into
+        the boat. This function remove it from left_spaces
+        """
         movement_id = last_movement_object["id"]
         completed = False
         for place in left_places:
@@ -255,12 +309,11 @@ def game():
         else:
             return
 
-
     pygame.init()
 
     width = 800
     height = 480
-    white = (255,255,255)
+    white = (255, 255, 255)
     black = (0, 0, 0)
 
     window = pygame.display.set_mode((width, height))
@@ -271,40 +324,72 @@ def game():
     boat_place1 = {"id": "void"}
     boat_place2 = {"id": "void"}
 
-    missionarie1 = {"file": "images/baby.png", "id": "missionarie1", "type": "missionarie"}
-    missionarie2 = {"file": "images/baby.png", "id": "missionarie2", "type": "missionarie"}
-    missionarie3 = {"file": "images/baby.png", "id": "missionarie3", "type": "missionarie"}
+    missionarie1 = {
+        "file": "images/baby.png",
+        "id": "missionarie1",
+        "type": "missionarie"}
+    missionarie2 = {
+        "file": "images/baby.png",
+        "id": "missionarie2",
+        "type": "missionarie"}
+    missionarie3 = {
+        "file": "images/baby.png",
+        "id": "missionarie3",
+        "type": "missionarie"}
 
-    cannibal1 = {"file": "images/cannibal.png", "id": "cannibal1", "type": "canibal"}
-    cannibal2 = {"file": "images/cannibal.png", "id": "cannibal2", "type": "canibal"}
-    cannibal3 = {"file": "images/cannibal.png", "id": "cannibal3", "type": "canibal"}
+    cannibal1 = {
+        "file": "images/cannibal.png",
+        "id": "cannibal1",
+        "type": "canibal"}
+    cannibal2 = {
+        "file": "images/cannibal.png",
+        "id": "cannibal2",
+        "type": "canibal"}
+    cannibal3 = {
+        "file": "images/cannibal.png",
+        "id": "cannibal3",
+        "type": "canibal"}
 
     boatLeftSide = (screen_rect.width / 7 * 2, screen_rect.centery)
     boatRightSide = (screen_rect.width / 7 * 5, screen_rect.centery)
     boat = {"id": "boat"}
     boat["surf"] = pygame.image.load("images/boat.png")
-    boat["surf"] = pygame.transform.scale(boat["surf"], (screen_rect.width / 4, screen_rect.height / 4))
+    boat["surf"] = pygame.transform.scale(
+        boat["surf"], (screen_rect.width / 4, screen_rect.height / 4))
     boat["rect"] = boat["surf"].get_rect()
     boat["rect"].center = boatLeftSide
 
-    actors = [missionarie1, missionarie2, missionarie3, cannibal1, cannibal2, cannibal3]
-
+    actors = [
+        missionarie1,
+        missionarie2,
+        missionarie3,
+        cannibal1,
+        cannibal2,
+        cannibal3]
 
     gamegraph = {
-        "mmmccc-L-": {"mm": "mccc-R-mm", "cc": "mmmc-R-cc", "m": "mmccc-R-m", "c": "mmmcc-R-c", "mc": "mmcc-R-mc"},
+        "mmmccc-L-": {"mm": "mccc-R-mm", "cc": "mmmc-R-cc", "m": "mmccc-R-m",
+                      "c": "mmmcc-R-c", "mc": "mmcc-R-mc"},
         "mccc-R-mm": "fail",
         "mmmc-R-cc": {"cc": "mmmccc-L-", "c": "mmmcc-L-c"},
-        "mmmcc-L-c": {"mm": "mcc-R-mmc", "cc": "mmm-R-ccc", "m": "mmcc-R-mc", "c": "mmmc-R-cc", "mc": "mmc-R-mcc"},
+        "mmmcc-L-c": {"mm": "mcc-R-mmc", "cc": "mmm-R-ccc", "m": "mmcc-R-mc",
+                      "c": "mmmc-R-cc", "mc": "mmc-R-mcc"},
         "mcc-R-mmc": "fail",
         "mmm-R-ccc": {"cc": "mmmcc-L-c", "c": "mmmc-L-cc"},
-        "mmmc-L-cc": {"mm": "mc-R-mmcc", "m": "mmc-R-mcc", "c": "mmm-R-ccc", "mc": "mm-R-mccc"},
-        "mc-R-mmcc": {"mm": "mmmc-L-cc", "cc": "mccc-L-mm", "m": "mmc-L-mcc", "c": "mcc-L-mmc", "mc": "mmcc-L-mc"},
-        "mmcc-L-mc": {"mm": "cc-R-mmmc", "cc": "mm-R-mccc", "m": "mcc-R-mmc", "c": "mmc-R-mcc", "mc": "mc-R-mmcc"},
-        "cc-R-mmmc": {"mm": "mmcc-L-mc", "m": "mcc-L-mmc", "c": "ccc-L-mmm", "mc": "mccc-L-mm"},
+        "mmmc-L-cc": {"mm": "mc-R-mmcc", "m": "mmc-R-mcc",
+                      "c": "mmm-R-ccc", "mc": "mm-R-mccc"},
+        "mc-R-mmcc": {"mm": "mmmc-L-cc", "cc": "mccc-L-mm",
+                      "m": "mmc-L-mcc", "c": "mcc-L-mmc", "mc": "mmcc-L-mc"},
+        "mmcc-L-mc": {"mm": "cc-R-mmmc", "cc": "mm-R-mccc",
+                      "m": "mcc-R-mmc", "c": "mmc-R-mcc", "mc": "mc-R-mmcc"},
+        "cc-R-mmmc": {"mm": "mmcc-L-mc", "m": "mcc-L-mmc",
+                      "c": "ccc-L-mmm", "mc": "mccc-L-mm"},
         "ccc-L-mmm": {"cc": "c-R-mmmcc", "c": "cc-R-mmmc"},
-        "c-R-mmmcc": {"mm": "mmc-L-mcc", "cc": "ccc-L-mmm", "m": "mc-L-mmcc", "c": "cc-L-mmmc", "mc": "mcc-L-mmc"},
+        "c-R-mmmcc": {"mm": "mmc-L-mcc", "cc": "ccc-L-mmm",
+                      "m": "mc-L-mmcc", "c": "cc-L-mmmc", "mc": "mcc-L-mmc"},
         "mc-L-mmcc": {"m": "c-R-mmmcc", "c": "m-R-mmccc", "mc": "-R-mmmccc"},
-        "m-R-mmccc": {"mm": "mmm-L-ccc", "cc": "mcc-L-mmc", "m": "mm-L-mccc", "c": "mc-L-mmcc", "mc": "mmc-L-mcc"},
+        "m-R-mmccc": {"mm": "mmm-L-ccc", "cc": "mcc-L-mmc", "m": "mm-L-mccc",
+                      "c": "mc-L-mmcc", "mc": "mmc-L-mcc"},
         "-R-mmmccc": "success",
         "cc-L-mmmc": {"cc": "-R-mmmccc", "c": "c-R-mmmcc"},
         "mcc-L-mmc": "fail",
@@ -315,7 +400,8 @@ def game():
         "mmccc-R-m": {"m": "mmmccc-L-"},
         "mmmcc-R-c": {"c": "mmmccc-L-"},
         "mmcc-R-mc": {"m": "mmmcc-L-c", "c": "mmccc-L-m", "mc": "mmmccc-L-"},
-        "mmccc-L-m": {"mm": "ccc-R-mmm", "cc": "mmc-R-mcc", "m": "mccc-R-mm", "c": "mmcc-R-mc", "mc": "mcc-R-mmc"},
+        "mmccc-L-m": {"mm": "ccc-R-mmm", "cc": "mmc-R-mcc", "m": "mccc-R-mm",
+                      "c": "mmcc-R-mc", "mc": "mcc-R-mmc"},
         "ccc-R-mmm": {"mm": "mmccc-L-m", "m": "mmmc-L-cc"}}
 
     right_places = []
@@ -328,11 +414,23 @@ def game():
     for i, actor in enumerate(actors):
         size_actor = screen_rect.height / 8
         actor["surf"] = pygame.image.load(actor["file"])
-        actor["surf"] = pygame.transform.scale(actor["surf"], (size_actor, size_actor))
+        actor["surf"] = pygame.transform.scale(
+            actor["surf"], (size_actor, size_actor))
         actor["rect"] = actor["surf"].get_rect()
-        left_position = (size_actor / 1.5, ((i) * screen_rect.height / 6) + screen_rect.height / 100 + size_actor / 2)
-        right_position = (screen_rect.right - + size_actor / 1.5,
-                          ((i) * screen_rect.height / 6) + screen_rect.height / 100 + size_actor / 2)
+        left_position = (
+            size_actor /
+            1.5,
+            ((i) *
+             screen_rect.height /
+             6) +
+            screen_rect.height /
+            100 +
+            size_actor /
+            2)
+        right_position = (
+            screen_rect.right - + size_actor / 1.5,
+            ((i) * screen_rect.height / 6) + screen_rect.height
+            / 100 + size_actor / 2)
         actor["rect"].center = left_position
 
         left_places.append([left_position, actor])
@@ -362,19 +460,16 @@ def game():
                     action = "dismount_boat"
                     to_dismount = event
 
-
                 elif event["id"] == boat_place2["id"]:
                     action = "dismount_boat"
                     to_dismount = event
 
-
-
                 elif event["id"] == "boat":
-                    if boat_passengers[1] is not None or boat_passengers[2] is not None:
+                    if boat_passengers[1] is not None \
+                       or boat_passengers[2] is not None:
                         action = "ferry"
 
-
-                elif event["id"] != boat_place1["id"] and event["id"] != boat_place2["id"]:
+                else:
                     if boat_place1["id"] == "void":
                         # print(foundPosition(event))
                         # print(boatPlace)
@@ -408,7 +503,8 @@ def game():
             action = None
 
         if action == "ferry":
-            destination = boatLeftSide if boatPlace == "right" else boatRightSide
+            destination = boatLeftSide if boatPlace == "right" \
+                          else boatRightSide
             done = ferry(boat_passengers, step, destination)
             if done:
                 boatPlace = "left" if boatPlace == "right" else "right"
@@ -431,6 +527,7 @@ def game():
 
         pygame.display.flip()
         fpsClock.tick(120)
+
 
 if __name__ == "__main__":
     game()
