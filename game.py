@@ -221,23 +221,6 @@ def game():
 
         return gamestate
 
-    def failure():
-        myfont = pygame.font.Font('freesansbold.ttf', 48)
-        msg = myfont.render("Failure", True, (255, 0, 0))
-        msg_box = msg.get_rect()
-        msg_box.center = screen_rect.center
-        window.blit(msg, msg_box)
-        pygame.display.flip()
-        pygame.time.wait(1000)
-
-    def success():
-        myfont = pygame.font.Font('freesansbold.ttf', 48)
-        msg = myfont.render("Success", True, (255, 0, 0))
-        msg_box = msg.get_rect()
-        msg_box.center = screen_rect.center
-        window.blit(msg, msg_box)
-        pygame.display.flip()
-        pygame.time.wait(1000)
 
     def updateSpacesStatus(last_movement_object):
         movement_id = last_movement_object["id"]
@@ -413,8 +396,15 @@ def game():
 
         if action == "check_solution":
             print("\n\n")
-            print(gameState())
-            print(gamegraph[gameState()])
+            game_state = gameState()
+            print(game_state)
+            print(gamegraph[game_state])
+
+            if str(gamegraph[game_state]) == "fail":
+                return "¡¡¡YOU LOOSEEE!!!"
+            if game_state == "success":
+                return "¡¡¡YOU WINN!!!"
+
             action = None
 
         if action == "ferry":

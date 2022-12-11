@@ -59,7 +59,7 @@ def welcomeScreen():
                 if event.key == pygame.K_ESCAPE:
                     sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                game()
+                godbyeScreen(game())
 
 def godbyeScreen(status):
     """
@@ -107,7 +107,7 @@ def godbyeScreen(status):
                 if event.key == pygame.K_ESCAPE:
                     sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                game()
+                godbyeScreen(game())
 
 
 if __name__ == "__main__":
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     black = (0, 0, 0)
 
     welcomeScreen()
-    #godbyeScreen("¡¡YOU WINN!!")
+
 
 
 
