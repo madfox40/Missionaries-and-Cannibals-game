@@ -35,12 +35,12 @@ def welcomeScreen():
         instructions = [
             "",
             "Rules:",
-            "1.Move the canibals and the missionaries to the other side.",
-            "2.To move the boat it needed minimun one character.",
-            "3.If there are on one side 2 or more canivals and only one missionarie you will losse.",
+            "1.Move the cannibals and the missionaries to the other side of the river.",
+            "2.To move the boat it needs at least one character.",
+            "3.If there is on one side 2 or more cannibals and only one missionary you will lose.",
             "4.Click on the characters or the boat to play.",
             "",
-            "¡¡Click to start.!!",
+            "¡¡Click to start!!",
             "",
             "",
             "By Victor Herguedas"

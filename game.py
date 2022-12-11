@@ -400,9 +400,9 @@ def game():
             print(game_state)
             print(gamegraph[game_state])
 
-            if str(gamegraph[game_state]) == "fail":
-                return "¡¡¡YOU LOOSEEE!!!"
-            if game_state == "success":
+            if gamegraph[game_state] == "fail":
+                return "¡¡¡YOU LOOSSEEE!!!"
+            if gamegraph[game_state] == "success":
                 return "¡¡¡YOU WINN!!!"
 
             action = None
